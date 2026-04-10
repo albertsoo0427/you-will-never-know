@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>불편한 웹사이트</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:sans-serif;background:#f7f6f3;color:#1a1a1a;}
+
+/* ── PAGES ── */
+.page{display:none;padding:2rem 1.5rem;min-height:100vh;}
+.page.active{display:block;}
+
+/* ── HOME ── */
+#home{padding:0;}
+#chaos-wrap{position:relative;width:100%;min-height:100vh;background:#f7f6f3;overflow:hidden;}
+
+/* ── INNER PAGE COMMON ── */
+.back{font-size:13px;color:#888;cursor:pointer;border:none;background:none;margin-bottom:1.5rem;padding:0;display:inline-flex;align-items:center;gap:4px;}
+.back:hover{color:#1a1a1a;}
+.ptitle{font-size:20px;font-weight:700;margin-bottom:.4rem;}
+.pdesc{font-size:13px;color:#666;margin-bottom:1.5rem;line-height:1.6;}
+
+input[type="text"],textarea{
+  font-family:inherit;font-size:14px;color:#1a1a1a;
+  background:#fff;border:1px solid #ccc;
+  border-radius:6px;padding:10px 12px;outline:none;width:100%;
+}
+input[type="text"]:focus,textarea:focus{border-color:#378ADD;}
+textarea{resize:none;line-height:1.7;}
+button{
+  font-family:inherit;font-size:14px;color:#1a1a1a;
+  background:#fff;border:1px solid #ccc;border-radius:6px;
+  padding:9px 18px;cursor:pointer;transition:background .15s;
+}
+button:hover{background:#f0f0f0;}
+button:disabled{opacity:.4;cursor:not-allowed;}
+input[type="range"]{width:100%;accent-color:#378ADD;}
+
+/* SESSION */
+.sess-quote{background:#f0f0f0;border-left:3px solid #378ADD;padding:12px 14px;font-size:14px;color:#555;margin-bottom:1rem;line-height:1.7;border-radius:0 6px 6px 0;}
+#sess-wrap{position:relative;}
+#sess-textarea{min-height:150px;}
+#sess-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.4);border-radius:6px;align-items:center;justify-content:center;z-index:5;}
+#sess-overlay.show{display:flex;}
+.sess-modal{background:#fff;border:1px solid #ddd;border-radius:10px;padding:1.5rem;width:260px;text-align:center;}
+.sess-modal h3{font-size:15px;margin-bottom:.5rem;}
+.sess-modal p{font-size:13px;color:#666;margin-bottom:1.25rem;line-height:1.6;}
+#sess-footer{display:flex;justify-content:space-between;margin-top:.75rem;}
+#sess-timer,#sess-counter{font-size:12px;color:#888;}
+#sess-status{font-size:13px;color:#888;margin-top:.75rem;min-height:20px;}
+
+/* KEYBOARD */
+.kb-box{background:#f0f0f0;border-radius:10px;padding:1.25rem;margin-bottom:1rem;}
+.kb-label{font-size:12px;color:#888;margin-bottom:.5rem;}
+#kb-typed{font-size:20px;font-weight:700;min-height:32px;}
+.kb-status{display:flex;align-items:center;gap:10px;background:#f0f0f0;border-radius:6px;padding:10px 14px;margin-bottom:1rem;}
+#kb-dot{width:10px;height:10px;border-radius:50%;background:#E24B4A;flex-shrink:0;}
+#kb-status-text{font-size:13px;color:#a32d2d;}
+#kb-alert-box{display:none;background:#fff;border:1px solid #f0c0c0;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem;}
+#kb-alert-box.show{display:block;}
+#kb-alert-title{font-size:14px;font-weight:700;color:#a32d2d;margin-bottom:4px;}
+#kb-alert-sub{font-size:13px;color:#888;}
+#kb-alert-count{font-size:12px;color:#aaa;margin-top:8px;}
+#kb-hint{font-size:13px;color:#888;margin-bottom:.75rem;}
+#kb-real-input{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;}
+
+/* CAPTCHA GRID */
+#cap-grid{display:grid;grid-template-columns:repeat(4,70px);gap:3px;margin-bottom:1rem;}
+.cap-cell{width:70px;height:70px;cursor:pointer;position:relative;overflow:hidden;border-radius:3px;background:#f0f0f0;border:2px solid transparent;transition:border-color .1s;}
+.cap-cell.sel{border-color:#378ADD;}
+#cap-err{font-size:13px;margin-bottom:.75rem;min-height:18px;}
+#cap-tries{font-size:13px;color:#888;margin-top:.75rem;}
+
+/* PASSWORD */
+.pw-row{display:flex;gap:8px;margin-bottom:.75rem;}
+.pw-row input{flex:1;}
+#pw-rules{list-style:none;margin-bottom:1rem;}
+#pw-rules li{font-size:13px;padding:3px 0;display:flex;align-items:center;gap:6px;}
+#pw-err{font-size:13px;min-height:20px;}
+
+/* AD */
+#ad-scene{position:relative;min-height:300px;background:#f0f0f0;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;overflow:hidden;}
+#ad-scene>p{font-size:14px;color:#666;margin-bottom:1.5rem;}
+#ad-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:20;align-items:center;justify-content:center;border-radius:10px;}
+#ad-overlay.show{display:flex;}
+#ad-modal{background:#fff;border-radius:10px;border:1px solid #ddd;width:280px;overflow:hidden;}
+#ad-modal-bar{background:#f0f0f0;padding:7px 12px;display:flex;align-items:center;gap:8px;font-size:12px;color:#555;}
+#ad-modal-url{background:#fff;border:1px solid #ddd;border-radius:12px;padding:3px 10px;font-size:11px;color:#1a0dab;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#ad-modal-body{padding:1.25rem;text-align:center;}
+#ad-modal-body .ad-icon{font-size:22px;margin-bottom:.5rem;}
+#ad-modal-body h3{font-size:15px;margin-bottom:.4rem;}
+#ad-modal-body p{font-size:13px;color:#666;margin-bottom:1rem;line-height:1.6;}
+#ad-cta{background:#E24B4A;color:#fff;border:none;border-radius:6px;padding:10px 24px;cursor:pointer;font-size:14px;width:100%;margin-bottom:.5rem;}
+#ad-redirect-row{display:none;margin-top:.5rem;}
+#ad-redirect-msg{font-size:12px;color:#888;margin-bottom:.4rem;}
+#ad-redirect-bar-wrap{background:#eee;border-radius:999px;height:5px;overflow:hidden;}
+#ad-redirect-bar{height:100%;background:#378ADD;border-radius:999px;width:0%;}
+#ad-modal-close{background:none;border:1px solid #ddd;color:#888;font-size:12px;border-radius:6px;padding:5px 14px;cursor:pointer;margin-top:.75rem;}
+#ad-fake-page{display:none;position:absolute;inset:0;background:#fff;border-radius:10px;z-index:30;flex-direction:column;}
+#ad-fake-page.show{display:flex;}
+#ad-fake-bar{background:#f1f3f4;padding:8px 12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid #ddd;}
+#ad-fake-back{font-size:20px;color:#555;background:none;border:none;cursor:pointer;line-height:1;}
+#ad-fake-url{background:#fff;border:1px solid #ccc;border-radius:16px;padding:4px 12px;font-size:12px;color:#1a0dab;flex:1;}
+#ad-fake-content{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:1.5rem;}
+.fake-form{background:#f8f8f8;border:1px solid #ddd;border-radius:8px;padding:12px;width:100%;max-width:240px;}
+.fake-form input{border:1px solid #ddd;border-radius:6px;padding:8px;font-size:13px;margin-bottom:8px;background:#fff;color:#111;}
+.fake-submit{width:100%;background:#4285f4;color:#fff;border:none;border-radius:6px;padding:9px;font-size:13px;cursor:pointer;}
+.fake-note{font-size:11px;color:#aaa;text-align:center;}
+#ad-status{font-size:13px;color:#888;margin-top:.75rem;}
+
+/* MESSAGE */
+.msg-prompt{background:#f0f0f0;border-left:3px solid #378ADD;padding:12px 14px;font-size:14px;line-height:1.7;color:#555;margin-bottom:1rem;border-radius:0 6px 6px 0;}
+#msg-log{background:#f0f0f0;border-radius:10px;padding:12px;min-height:120px;max-height:180px;overflow-y:auto;margin-bottom:.75rem;display:flex;flex-direction:column;gap:8px;}
+.msg-bubble{background:#378ADD;color:#fff;padding:8px 14px;border-radius:16px 16px 4px 16px;font-size:14px;line-height:1.5;align-self:flex-end;max-width:85%;}
+.msg-empty{font-size:13px;color:#aaa;align-self:center;margin-top:1rem;}
+.msg-row{display:flex;gap:8px;}
+.msg-row textarea{flex:1;height:44px;}
+#msg-hint{font-size:12px;color:#E24B4A;margin-top:6px;min-height:18px;}
+
+/* SLOW QUIZ */
+#slow-timer-wrap{background:#eee;border-radius:999px;height:8px;overflow:hidden;margin-bottom:.6rem;}
+#slow-timer-bar{height:100%;background:#E24B4A;border-radius:999px;width:100%;transition:width .1s linear;}
+#slow-countdown{font-size:13px;color:#E24B4A;font-weight:700;margin-bottom:1rem;min-height:20px;}
+#slow-task{background:#f0f0f0;border-radius:6px;padding:14px;font-size:15px;font-weight:700;margin-bottom:1.25rem;line-height:1.5;}
+.slow-opts{display:flex;flex-direction:column;gap:10px;}
+.slow-opt{text-align:left;padding:11px 16px;font-size:14px;}
+#slow-result{font-size:13px;margin-top:1rem;min-height:20px;}
+#slow-next{font-size:13px;margin-top:.75rem;display:none;}
+
+/* CAPTCHA SIMPLE */
+#cap2-img{font-size:28px;font-weight:700;letter-spacing:10px;color:#1a1a1a;background:#f0f0f0;border-radius:6px;padding:16px 20px;display:inline-block;margin-bottom:1rem;font-family:'Courier New',monospace;user-select:none;transform:skewX(-4deg);filter:blur(0.5px);}
+#cap2-input{max-width:280px;margin-bottom:.75rem;}
+.cap2-btns{display:flex;gap:8px;}
+#cap2-result{font-size:14px;margin-top:1rem;min-height:20px;}
+#cap2-tries{font-size:12px;color:#aaa;margin-top:1.5rem;}
+
+/* UPDATE */
+.update-box{background:#f0f0f0;border-radius:10px;padding:2rem;display:flex;flex-direction:column;align-items:center;gap:1.25rem;text-align:center;}
+#update-pct{font-size:32px;font-weight:700;}
+#update-bar-wrap{width:100%;background:#fff;border-radius:999px;height:8px;overflow:hidden;border:1px solid #ddd;}
+#update-bar{height:100%;background:#378ADD;border-radius:999px;width:1%;transition:width .4s;}
+#update-warn{font-size:13px;color:#a32d2d;}
+#update-msg{font-size:13px;color:#888;}
+
+/* WIFI */
+.wifi-box{background:#f0f0f0;border-radius:10px;padding:2rem;display:flex;flex-direction:column;align-items:center;gap:1rem;text-align:center;}
+#wifi-icon{font-size:40px;}
+#wifi-title{font-size:16px;font-weight:700;}
+#wifi-sub{font-size:13px;color:#666;}
+.wifi-row{display:flex;align-items:center;gap:6px;}
+#wifi-dot{width:10px;height:10px;border-radius:50%;background:#E24B4A;}
+#wifi-status-text{font-size:13px;color:#888;}
+#wifi-log{font-size:12px;color:#666;text-align:left;width:100%;background:#fff;border-radius:6px;padding:8px 10px;white-space:pre-wrap;font-family:monospace;line-height:1.6;}
+
+/* TINY */
+#tiny-counter{font-size:32px;font-weight:700;margin-bottom:1.5rem;}
+#tiny-area{position:relative;height:140px;background:#f0f0f0;border-radius:10px;overflow:hidden;}
+#tiny-btn{position:absolute;font-size:9px;padding:3px 6px;border-radius:3px;}
+#tiny-msg{font-size:13px;color:#888;margin-top:.75rem;}
+
+/* POPUP */
+#popup-scene{position:relative;min-height:240px;background:#f0f0f0;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+#popup-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.35);border-radius:10px;align-items:center;justify-content:center;z-index:10;}
+#popup-overlay.show{display:flex;}
+.popup-window{background:#fff;border:1px solid #ddd;border-radius:10px;width:280px;overflow:hidden;}
+.popup-bar{background:#f0f0f0;padding:8px 12px;display:flex;align-items:center;justify-content:space-between;}
+.traffic{display:flex;gap:6px;}
+.traffic-btn{width:12px;height:12px;border-radius:50%;border:none;cursor:pointer;}
+.popup-body{padding:1.25rem;font-size:14px;color:#666;line-height:1.7;}
+#popup-msg{font-size:13px;color:#888;margin-top:.75rem;}
+
+/* SPINNER */
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner{width:48px;height:48px;border:3px solid #ddd;border-top-color:#378ADD;border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 1.5rem;}
+.spinner-wrap{text-align:center;padding:2rem 0;}
+#spin-msgs{font-size:14px;color:#888;}
+
+/* LOADING BAR */
+#prog-bar-wrap{background:#e8e8e8;border-radius:999px;height:10px;width:100%;overflow:hidden;margin-bottom:1rem;}
+#prog-bar{height:100%;background:#378ADD;border-radius:999px;width:0%;transition:width .3s;}
+#prog-pct{font-size:32px;font-weight:700;}
+#prog-msg{font-size:13px;color:#888;margin-top:8px;}
+#retry-btn{display:none;margin-top:1.5rem;}
+
+/* VOLUME */
+#vol-display{font-size:32px;font-weight:700;margin-top:1rem;}
+#vol-label{font-size:13px;color:#888;margin-top:4px;}
+
+/* TYPO */
+#typo-input{height:120px;margin-bottom:1rem;}
+#typo-display{font-size:15px;background:#f0f0f0;border-radius:6px;padding:12px 14px;min-height:60px;line-height:1.7;white-space:pre-wrap;}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ HOME ════════════════ -->
+<div id="home" class="page active">
+  <div id="chaos-wrap"></div>
+</div>
+
+<!-- ════════════════ SESSION ════════════════ -->
+<div id="session" class="page">
+  <button class="back" onclick="goHome()">← 홈으로</button>
+  <h2 class="ptitle">텍스트 박스의 소멸</h2>
+  <p class="pdesc">아래 문장을 받아 적고 '전송'을 눌러보세요.</p>
+  <div class="sess-quote">"인공지능이 발전함에 따라, 인간과 기계의 협업 방식은 점점 더 정교해지고 있으며, 이는 사회 전반에 걸친 패러다임의 전환을 예고하고 있습니다."</div>
+  <div id="sess-wrap">
+    <textarea id="sess-textarea" placeholder="위 문장을 여기에 받아 적어보세요..." oninput="sessType()"></textarea>
+    <div id="sess-overlay">
+      <div class="sess-modal">
+        <h3>세션이 만료되었습니다</h3>
+        <p>보안을 위해 자동으로 로그아웃되었습니다.<br>작성 중이던 내용은 저장되지 않았습니다.</p>
+        <button onclick="sessReset()" style="width:100%;">다시 로그인</button>
+      </div>
+    </div>
+  </div>
+  <div id="sess-footer">
+    <span id="sess-timer">세션 만료까지: <strong>30초</strong></span>
+    <span id="sess-counter">0자</span>
+  </div>
+  <div style="margin-top:.75rem;"><button onclick="sessSend()">전송</button></div>
+  <div id="sess-status"></div>
+</div>
+
+<!-- ════════════════ KEYBOARD ════════════════ -->
+<div id="keyboard" class="page">
+  <button class="back" onclick="goHome()">← 홈으로</button>
+  <h2 class="ptitle">하드웨어 지옥</h2>
+  <p class="pdesc">키보드로 아무 키나 눌러보세요.</p>
+  <div class="kb-box">
+    <div class="kb-label">입력된 텍스트</div>
+    <div id="kb-typed"><span style="color:#aaa;font-size:14px;font-weight:400;">입력을 시작해보세요...</span></div>
+  </div>
+  <div class="kb-status">
+    <div id="kb-dot"></div>
+    <div id="kb-status-text">연결된 키보드가 없습니다</div>
+  </div>
+  <div id="kb-alert-box">
+    <div id="kb-alert-title">하드웨어 경고 — 띠롱!</div>
+    <div id="kb-alert-sub"></div>
+    <div id="kb-alert-count"></div>
+  </div>
+  <div id="kb-hint">버튼을 눌러 입력 포커스를 활성화하세요.</div>
+  <button id="kb-focus-btn" onclick="kbFocus()">입력 활성화</button>
+  <input id="kb-real-input" type="text" autocomplete="off">
+</div>
+
+<!-- ════════════════ CAPTCHA GRID ════════════════ -->
+<div id="capgrid" class="page">
+  <button class="back" onclick="goHome()">← 홈으로</button>
+  <h2 class="ptitle">끝나지 않는 캡차</h2>
+  <p class="pdesc">신호등이 있는 칸을 모두 선택하세요.</p>
+  <div id="cap-grid"></div>
+  <div id="cap-err"></div>
+  <button onclick="verifyCap()">확인</button>
+  <div id="cap-tries"></div>
+</div>
+
+<!-- ════════════════ PASSWORD ════════════════ -->
+<div id="password" class="page">
+  <button class="back" onclick="goHome()">← 홈으로</button>
+  <h2 class="ptitle">비밀번호의 모순</h2>
+  <p class="pdesc">새 비밀번호를 설정하세요. 규칙을 모두 충족해야 합니다.</p>
+  <div class="pw-row">
+    <input type="text" id="pw-input" placeholder="비밀번호 입력..." oninput="checkPw(this.value)">
+    <button onclick="submitPw()">설정</button>
+  </div>
+  <ul id="pw-rules"></ul>
+  <div id="pw-err"></div>
+</div>
+
+<!-- ════════════════ AD TRAP ════════════════ -->
+<div id="adtrap" class="page">
+  <button class="back" onclick="goHome()">← 홈으로</button>
+  <h2 class="ptitle">낚시 광고</h2>
+  <p class="pdesc">아래 확인 버튼을 눌러보세요.</p>
+  <div id="ad-scene">
+    <p>"정말 제출하시겠습니까?"</p>
+    <button id="real-confirm" onclick="tryConfirm()">확인</button>
+    <div id="ad-overlay">
+      <div id="ad-modal">
+        <div id="ad-modal-bar"><span>●</span><div id="ad-modal-url">ad.lucky-winner.kr/iphone16-free?ref=popup</div></div>
+        <div id="ad-modal-body">
+          <div class="ad-icon">🎁</div>
+          <h3>축하합니다!</h3>
+          <p>오늘의 행운 당첨자입니다.<br>아이폰 16 Pro를 받아가세요!</p>
+          <button id="ad-cta" onclick="goAdPage()">지금 받기 →</button>
+          <div id="ad-redirect-row">
+            <div id="ad-redirect-msg">광고 페이지로 이동 중...</div>
+            <div id="ad-redirect-bar-wrap"><div id="ad-redirect-bar"></div></div>
+          </div>
+          <button id="ad-modal-close" onclick="closeAd()">닫기</button>
+        </div>
+      </div>
+    </div>
+    <div id="ad-fake-page">
+      <div id="ad-fake-bar">
+        <button id="ad-fake-back" onclick="closeAdPage()">‹</button>
+        <div id="ad-fake-url">ad.lucky-winner.kr/iphone16-free?click=1</div>
+      </div>
+      <div id="ad-fake-content">
+        <div style="font-size:40px;">📱</div>
+        <h2 style="font-size:16px;">당신은 오늘의 당첨자!</h2>
+        <p style="font-size:13px;color:#555;text-align:center;line-height:1.7;">개인정보를 입력하고<br>아이폰 16 Pro를 수령하세요.</p>
+        <div class="fake-form">
+          <input type="text" placeholder="이름">
+          <input type="text" placeholder="전화번호">
+          <button class="fake-submit" onclick="closeAdPage()">수령하기</button>
+        </div>
+        <div class="fake-note">※ 체험용 가짜 광고 페이지입니다</div>
+      </div>
+    </div>
+  </div>
+  <div id="ad-status"></div>
+</div>
+
+<!-- ════════════════ UPDATE ════════════════ -->
+<div id="update" class="page">
+  <button class="back" onclick="goHome();clearInterval(updateTimer);">← 홈으로</button>
+  <h2 class="ptitle">자동 업데이트의 습격</h2>
+  <p class="pdesc">오늘 중요한 발표가 있는 날. 컴퓨터를 켰습니다.</p>
+  <div class="update-box">
+    <div style="font-size:40px;">💻</div>
+    <div style="font-size:16px;font-weight:700;">업데이트 설치 중</div>
+    <div id="update-pct">1%</div>
+    <div id="update-bar-wrap"><div id="update-bar"></div></div>
+    <div id="update-warn">전원을 끄지 마세요. 데이터가 손상될 수 있습니다.</div>
+    <button id="update-skip" onclick="skipUpdate()">건너뛰기</button>
+    <div id="update-msg"></div>
+  </div>
+</div>
+
+<!-- ════════════════ WIFI ════════════════ -->
+<div id="wifi" class="page">
+  <button class="back" onclick="goHome();clearInterval(wifiTimer);">← 홈으로</button>
+  <h2 class="ptitle">연결되어있는데요?</h2>
+  <p class="pdesc">와이파이는 분명히 연결되어 있습니다. 그런데...</p>
+  <div class="wifi-box">
+    <div id="wifi-icon">📶</div>
+    <div id="wifi-title">인터넷이 연결되지 않았습니다</div>
+    <div id="wifi-sub">Wi-Fi에 연결되어 있지만 인터넷에 액세스할 수 없습니다.</div>
+    <div class="wifi-row"><div id="wifi-dot"></div><span id="wifi-status-text">연결 없음</span></div>
+    <button onclick="wifiRetry()">다시 시도</button>
+    <div id="wifi-log"></div>
+  </div>
+</div>
+
+<!-- ════════════════ TINY ════════════════ -->
+<div id="tiny" class="page">
+  <button class="back" onclick="goHome()">← 홈으로</button>
+  <h2 class="ptitle">극소 확인 버튼</h2>
+  <p class="pdesc">버튼을 10번 눌러보세요. 누를 수 있다면요.</p>
+  <div id="tiny-counter">0 / 10</div>
+  <div id="tiny-area"><button id="tiny-btn" onclick="tinyClick()">확인</button></div>
+  <div id="tiny-msg"></div>
+</div>
+
+<!-- ════════════════ POPUP ════════════════ -->
+<div id="popup" class="page">
+  <button class="back" onclick="goHome()">← 홈으로</button>
+  <h2 class="ptitle">자폭하는 팝업창</h2>
+  <p class="pdesc">팝업을 열고 노란색(최소화) 버튼을 눌러보세요.</p>
+  <div id="popup-scene">
+    <button id="open-popup-btn" onclick="openPopup()">팝업 열기</button>
+    <div id="popup-overlay">
+      <div class="popup-window">
+        <div class="popup-bar">
+          <div class="traffic">
+            <button class="traffic-btn" style="background:#E24B4A;" onclick="closePopup()"></button>
+            <button class="traffic-btn" style="background:#EF9F27;" onclick="minimizePopup()"></button>
+            <button class="traffic-btn" style="background:#639922;"></button>
+          </div>
+          <span style="font-size:13px;font-weight:700;">중요한 알림</span>
+          <span style="width:42px;"></span>
+        </div>
+        <div class="popup-body">🎉 최소화 버튼(노란색)을 눌러보세요.</div>
+      </div>
+    </div>
+  </div>
+  <div id="popup-msg"></div>
+</div>
+
+<!-- ════════════════ SPINNER ════════════════ -->
+<div id="spinner" class="page">
+  <button class="back" onclick="goHome();clearInterval(spinMsgTimer);">← 홈으로</button>
+  <h2 class="ptitle">무한 로딩 화면</h2>
+  <p class="pdesc">잠시만 기다려 주세요. 곧 완료됩니다.</p>
+  <div class="spinner-wrap">
+    <div class="spinner"></div>
+    <div id="spin-msgs">데이터를 불러오는 중...</div>
+    <button onclick="spinCancel()" style="margin-top:1.5rem;">취소</button>
+  </div>
+</div>
+
+<!-- ════════════════ MESSAGE ════════════════ -->
+<div id="message" class="page">
+  <button class="back" onclick="goHome()">← 홈으로</button>
+  <h2 class="ptitle">엔터 = 전송</h2>
+  <p class="pdesc">아래 문의 내용을 줄바꿈으로 구분해 입력해보세요.</p>
+  <div class="msg-prompt">
+    고객센터 문의:<br><br>
+    <strong>이름:</strong> 홍길동<br>
+    <strong>주문번호:</strong> #20240407-9921<br>
+    <strong>문의:</strong> 주문한 상품이 5일째 배송이 안 되고 있습니다.<br><br>
+    <span style="font-size:12px;">※ 각 항목을 줄바꿈으로 구분해서 입력하세요.</span>
+  </div>
+  <div id="msg-log"><div class="msg-empty">메세지를 입력해보세요.</div></div>
+  <div class="msg-row">
+    <textarea id="msg-input" placeholder="메세지 입력... (엔터 = 전송)"></textarea>
+    <button onclick="sendMsg()">전송</button>
+  </div>
+  <div id="msg-hint"></div>
+</div>
+
+<!-- ════════════════ SLOW ════════════════ -->
+<div id="slow" class="page">
+  <button class="back" onclick="goHome();clearInterval(slowTimerInterval);">← 홈으로</button>
+  <h2 class="ptitle">느린 버튼</h2>
+  <p class="pdesc">5초 안에 정답을 눌러야 합니다. 버튼은 1~2초 느리게 반응해요.</p>
+  <div id="slow-timer-wrap"><div id="slow-timer-bar"></div></div>
+  <div id="slow-countdown">⏱ 5.0초</div>
+  <div id="slow-task"></div>
+  <div class="slow-opts" id="slow-opts"></div>
+  <div id="slow-result"></div>
+  <button id="slow-next" onclick="nextSlowQ()">다음 문제 →</button>
+</div>
+
+<!-- ════════════════ LOADING ════════════════ -->
+<div id="loading" class="page">
+  <button class="back" onclick="goHome();clearInterval(loadingTimer);">← 홈으로</button>
+  <h2 class="ptitle">영원한 로딩바</h2>
+  <p class="pdesc">파일을 업로드하고 있습니다. 거의 다 왔어요!</p>
+  <div id="prog-bar-wrap"><div id="prog-bar"></div></div>
+  <div id="prog-pct">0%</div>
+  <div id="prog-msg"></div>
+  <button id="retry-btn" onclick="startLoading()">다시 시도</button>
+</div>
+
+<!-- ════════════════ VOLUME ════════════════ -->
+<div id="volume" class="page">
+  <button class="back" onclick="goHome()">← 홈으로</button>
+  <h2 class="ptitle">탈출하는 볼륨 슬라이더</h2>
+  <p class="pdesc">마우스를 올리면 슬라이더가 도망칩니다. 정확히 50으로 맞춰보세요.</p>
+  <input type="range" id="vol-slider" min="0" max="100" value="30" step="1"
+    onmouseover="escapeSlider()" oninput="updateVol(this.value)">
+  <div id="vol-display">30</div>
+  <div id="vol-label"></div>
+</div>
+
+<!-- ════════════════ TYPO ════════════════ -->
+<div id="typo" class="page">
+  <button class="back" onclick="goHome()">← 홈으로</button>
+  <h2 class="ptitle">자동 오타 생성기</h2>
+  <p class="pdesc">입력한 내용이 아래에 변형되어 나타납니다.</p>
+  <textarea id="typo-input" placeholder="여기에 입력해보세요..." oninput="applyTypo(this.value)"></textarea>
+  <div id="typo-display">입력하면 여기에 표시됩니다.</div>
+</div>
+
+<!-- ════════════════ CAPTCHA SIMPLE ════════════════ -->
+<div id="captcha" class="page">
+  <button class="back" onclick="goHome()">← 홈으로</button>
+  <h2 class="ptitle">지옥의 보안문자</h2>
+  <p class="pdesc">보안문자를 정확히 입력하고 확인을 눌러보세요.</p>
+  <div id="cap2-img"></div><br>
+  <input type="text" id="cap2-input" placeholder="보안문자 입력...">
+  <div class="cap2-btns" style="margin-top:.75rem;">
+    <button onclick="checkCap2()">확인</button>
+    <button onclick="genCap2()">새로고침</button>
+  </div>
+  <div id="cap2-result"></div>
+  <div id="cap2-tries"></div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════
+   CHAOS HOME
+═══════════════════════════════════════ */
+const FONTS = [
+  'Georgia,serif','Arial,sans-serif','monospace','cursive',
+  'Impact,sans-serif','Palatino,serif','Courier New,monospace',
+  'Trebuchet MS,sans-serif','Times New Roman,serif','fantasy'
+];
+const CHARS = '불편한웹사이트에오신걸환영합니다아래에서기능을선택하세요버튼을누르면이동합니다매우불편할예정입니다체험해보세요당신은이미늦었습니다여기를눌러도됩니다안눌러도됩니다';
+const GRAYS = ['#111','#333','#555','#777','#999','#222','#444','#666','#888','#1a1a1a'];
+
+const BTN_STYLES = [
+  {w:120,h:42,r:'2px',bg:'#1a1a1a'},
+  {w:60,h:60,r:'50%',bg:'#333'},
+  {w:170,h:28,r:'0',bg:'transparent',extra:'border:2px dashed #333;'},
+  {w:34,h:100,r:'999px',bg:'#555'},
+  {w:95,h:95,r:'10px',bg:'#222'},
+  {w:190,h:18,r:'0',bg:'#e2e2e2'},
+  {w:46,h:46,r:'4px',bg:'#444'},
+  {w:210,h:16,r:'0',bg:'#d0d0d0'},
+  {w:75,h:75,r:'8px 0 8px 0',bg:'#fff',extra:'border:2px solid #222;'},
+  {w:130,h:36,r:'999px',bg:'#2a2a2a'},
+  {w:28,h:130,r:'2px',bg:'#666'},
+  {w:170,h:14,r:'0',bg:'transparent',extra:'outline:1px solid #bbb;'},
+  {w:85,h:85,r:'50%',bg:'#fff',extra:'border:2px solid #333;'},
+  {w:105,h:105,r:'0',bg:'#111'},
+  {w:52,h:28,r:'1px',bg:'#e0e0e0'},
+  {w:95,h:20,r:'0',bg:'transparent',extra:'border:1px solid #aaa;'},
+];
+
+const PAGE_IDS = ['session','keyboard','capgrid','password','adtrap','update','wifi','tiny','popup','spinner','message','slow','loading','volume','typo','captcha'];
+
+function buildHome() {
+  const wrap = document.getElementById('chaos-wrap');
+  wrap.innerHTML = '';
+  const W = wrap.offsetWidth || 680;
+  const H = Math.max(window.innerHeight, 640);
+  wrap.style.height = H + 'px';
+
+  const placed = [];
+  function overlaps(a, b) {
+    return !(a.x + a.w + 6 < b.x || b.x + b.w + 6 < a.x || a.y + a.h + 6 < b.y || b.y + b.h + 6 < a.y);
+  }
+  function tryPlace(w, h) {
+    for (let t = 0; t < 200; t++) {
+      const x = Math.floor(Math.random() * Math.max(1, W - w - 10)) + 5;
+      const y = Math.floor(Math.random() * Math.max(1, H - h - 10)) + 5;
+      const box = {x, y, w, h};
+      if (!placed.some(p => overlaps(p, box))) return box;
+    }
+    return null;
+  }
+
+  BTN_STYLES.forEach((cfg, i) => {
+    const pos = tryPlace(cfg.w, cfg.h);
+    if (!pos) return;
+    placed.push(pos);
+    const rot = (Math.random() - 0.5) * 12;
+    const btn = document.createElement('div');
+    btn.style.cssText = `
+      position:absolute;
+      left:${pos.x}px;top:${pos.y}px;
+      width:${cfg.w}px;height:${cfg.h}px;
+      background:${cfg.bg};
+      border-radius:${cfg.r};
+      ${cfg.extra || ''}
+      cursor:pointer;
+      transform:rotate(${rot}deg);
+      transition:opacity .15s;
+    `;
+    btn.addEventListener('mouseenter', () => btn.style.opacity = '0.75');
+    btn.addEventListener('mouseleave', () => btn.style.opacity = '1');
+    btn.addEventListener('click', () => goPage(PAGE_IDS[i]));
+    wrap.appendChild(btn);
+  });
+
+  const totalChars = CHARS.length;
+  for (let i = 0; i < 100; i++) {
+    const ch = CHARS[i % totalChars];
+    const sz = Math.floor(Math.random() * 28) + 9;
+    const font = FONTS[Math.floor(Math.random() * FONTS.length)];
+    const color = GRAYS[Math.floor(Math.random() * GRAYS.length)];
+    const rot = (Math.random() - 0.5) * 80;
+    const op = (Math.random() * 0.5 + 0.2).toFixed(2);
+    const x = Math.floor(Math.random() * Math.max(1, W - 30)) + 5;
+    const y = Math.floor(Math.random() * Math.max(1, H - 30)) + 5;
+
+    const el = document.createElement('span');
+    el.textContent = ch;
+    el.style.cssText = `
+      position:absolute;
+      left:${x}px;top:${y}px;
+      font-size:${sz}px;
+      font-family:${font};
+      color:${color};
+      opacity:${op};
+      transform:rotate(${rot}deg);
+      pointer-events:none;
+      user-select:none;
+    `;
+    wrap.appendChild(el);
+  }
+}
+
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if (id==='session')  initSess();
+  if (id==='keyboard') initKb();
+  if (id==='capgrid')  initCap();
+  if (id==='password') initPw();
+  if (id==='adtrap')   initAd();
+  if (id==='update')   initUpdate();
+  if (id==='wifi')     initWifi();
+  if (id==='tiny')     { tinyCount=0; updateTiny(); setTimeout(placeTinyBtn, 50); }
+  if (id==='popup')    { document.getElementById('popup-overlay').classList.remove('show'); document.getElementById('open-popup-btn').style.display=''; document.getElementById('popup-msg').textContent=''; }
+  if (id==='spinner')  startSpinner();
+  if (id==='message')  setupMsg();
+  if (id==='loading')  startLoading();
+  if (id==='volume')   updateVol(document.getElementById('vol-slider').value);
+  if (id==='captcha')  initCap2();
+  if (id==='slow')     initSlow();
+}
+
+function goHome() {
+  clearTimeout(sessTimeout);
+  clearInterval(updateTimer);
+  clearInterval(wifiTimer);
+  clearInterval(spinMsgTimer);
+  clearInterval(loadingTimer);
+  clearInterval(slowTimerInterval);
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('home').classList.add('active');
+  window.scrollTo(0,0);
+}
+
+window.addEventListener('load', buildHome);
+window.addEventListener('resize', buildHome);
+
+/* ═══════════════════════════════════════
+   SESSION
+═══════════════════════════════════════ */
+let sessTimeout = null, sessTimeLeft = 30;
+function initSess() {
+  clearTimeout(sessTimeout); sessTimeLeft = 30;
+  const ta = document.getElementById('sess-textarea');
+  ta.value = ''; ta.disabled = false;
+  document.getElementById('sess-overlay').classList.remove('show');
+  document.getElementById('sess-status').textContent = '';
+  document.getElementById('sess-counter').textContent = '0자';
+  updateSessTimer(); tickSess();
+}
+function tickSess() {
+  clearTimeout(sessTimeout);
+  if (sessTimeLeft <= 0) { expireSess(); return; }
+  sessTimeLeft--;
+  updateSessTimer();
+  sessTimeout = setTimeout(tickSess, 1000);
+}
+function updateSessTimer() {
+  const el = document.getElementById('sess-timer');
+  if (el) el.innerHTML = '세션 만료까지: <strong style="color:' + (sessTimeLeft<=10?'#E24B4A':'#1a1a1a') + '">' + sessTimeLeft + '초</strong>';
+}
+function sessType() {
+  document.getElementById('sess-counter').textContent = document.getElementById('sess-textarea').value.length + '자';
+  sessTimeLeft = 30;
+}
+function expireSess() {
+  clearTimeout(sessTimeout);
+  document.getElementById('sess-textarea').disabled = true;
+  document.getElementById('sess-overlay').classList.add('show');
+}
+function sessReset() {
+  document.getElementById('sess-overlay').classList.remove('show');
+  const ta = document.getElementById('sess-textarea');
+  ta.value = ''; ta.disabled = false;
+  document.getElementById('sess-counter').textContent = '0자';
+  document.getElementById('sess-status').textContent = '😭 처음부터 다시 써야 합니다.';
+  sessTimeLeft = 30; tickSess();
+}
+function sessSend() {
+  if (!document.getElementById('sess-textarea').value.trim()) {
+    document.getElementById('sess-status').textContent = '내용을 먼저 입력하세요.'; return;
+  }
+  expireSess();
+}
+
+/* ═══════════════════════════════════════
+   KEYBOARD
+═══════════════════════════════════════ */
+let kbActive = false, kbAlertCount = 0;
+const kbMsgs = ['경고: 연결된 키보드가 없습니다 (오류 코드: HID_0x4E)','알 수 없는 입력 장치가 감지되었습니다','드라이버를 찾을 수 없습니다','입력 장치 인식 실패 — 재시작을 권장합니다','키보드 연결을 확인하세요'];
+function initKb() {
+  kbAlertCount = 0; kbActive = false;
+  document.getElementById('kb-typed').innerHTML = '<span style="color:#aaa;font-size:14px;font-weight:400;">입력을 시작해보세요...</span>';
+  document.getElementById('kb-alert-box').classList.remove('show');
+  document.getElementById('kb-hint').textContent = '버튼을 눌러 입력 포커스를 활성화하세요.';
+  document.getElementById('kb-focus-btn').textContent = '입력 활성화';
+}
+function kbFocus() {
+  kbActive = true;
+  document.getElementById('kb-real-input').focus();
+  document.getElementById('kb-hint').textContent = '이제 키보드를 눌러보세요.';
+  document.getElementById('kb-focus-btn').textContent = '활성화됨';
+}
+document.addEventListener('keydown', function(e) {
+  const ap = document.querySelector('.page.active');
+  if (!ap || ap.id !== 'keyboard' || !kbActive) return;
+  e.preventDefault();
+  kbAlertCount++;
+  document.getElementById('kb-alert-box').classList.add('show');
+  document.getElementById('kb-alert-title').textContent = '하드웨어 경고 — 띠롱!';
+  document.getElementById('kb-alert-sub').textContent = kbMsgs[(kbAlertCount-1) % kbMsgs.length];
+  document.getElementById('kb-alert-count').textContent = '경고 발생 횟수: ' + kbAlertCount + '회 (입력 키: ' + e.key + ')';
+  document.getElementById('kb-status-text').textContent = '연결된 키보드가 없습니다 (시도: ' + kbAlertCount + '회)';
+});
+
+/* ═══════════════════════════════════════
+   CAPTCHA GRID
+═══════════════════════════════════════ */
+const EMOJIS = ['🚗','🌳','🏠','🐶','☁️','🌸','🍎','📦'];
+let capEdgeCells = [], capTries = 0;
+function initCap() {
+  capTries = 0;
+  document.getElementById('cap-tries').textContent = '';
+  document.getElementById('cap-err').textContent = '';
+  buildCap();
+}
+function buildCap() {
+  const grid = document.getElementById('cap-grid');
+  grid.innerHTML = ''; capEdgeCells = [];
+  const pos = [...Array(16).keys()];
+  for (let i = pos.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [pos[i],pos[j]]=[pos[j],pos[i]]; }
+  const lc = Math.floor(Math.random()*3)+3, lp = new Set(pos.slice(0,lc));
+  const ec = Math.floor(Math.random()*2)+1, ep = new Set(pos.slice(lc,lc+ec));
+  capEdgeCells = [...ep];
+  for (let i = 0; i < 16; i++) {
+    const hl = lp.has(i), he = ep.has(i);
+    const cell = document.createElement('div');
+    cell.className = 'cap-cell';
+    cell.dataset.light = hl?'1':'0'; cell.dataset.edge = he?'1':'0';
+    if (hl) {
+      cell.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;">🚦</div>';
+    } else if (he) {
+      let h = '<div style="width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;position:absolute;inset:0;">';
+      for (let q=0;q<4;q++) h += '<div style="display:flex;align-items:center;justify-content:center;font-size:18px;">'+(q===0?'🚦':EMOJIS[Math.floor(Math.random()*EMOJIS.length)])+'</div>';
+      cell.innerHTML = h + '</div>';
+    } else {
+      cell.innerHTML = '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;">'+EMOJIS[Math.floor(Math.random()*EMOJIS.length)]+'</div>';
+    }
+    cell.innerHTML += '<div style="font-size:14px;position:absolute;top:2px;right:4px;opacity:0;transition:opacity .1s;" class="ck">✓</div>';
+    cell.onclick = () => { cell.classList.toggle('sel'); cell.querySelector('.ck').style.opacity = cell.classList.contains('sel')?'1':'0'; };
+    grid.appendChild(cell);
+  }
+}
+function verifyCap() {
+  const cells = document.querySelectorAll('.cap-cell');
+  const sel = new Set();
+  cells.forEach((c,i) => { if(c.classList.contains('sel')) sel.add(i); });
+  let allLight=true, noFalse=true;
+  cells.forEach((c,i) => {
+    if(c.dataset.light==='1'&&!sel.has(i)) allLight=false;
+    if(c.dataset.light==='0'&&c.dataset.edge==='0'&&sel.has(i)) noFalse=false;
+  });
+  capTries++;
+  const edgeSel = capEdgeCells.some(i=>sel.has(i));
+  const err = document.getElementById('cap-err');
+  if(allLight&&noFalse&&!edgeSel){err.style.color='#0f6e56';err.textContent='✓ 인증 성공! ('+capTries+'번 시도)';document.getElementById('cap-tries').textContent='';}
+  else if(allLight&&noFalse&&edgeSel){err.style.color='#a32d2d';err.textContent='일부 타일에 신호등이 미세하게 걸쳐 있습니다. 다시 시도하세요.';document.getElementById('cap-tries').textContent=capTries+'번 시도';buildCap();}
+  else{err.style.color='#a32d2d';err.textContent=!allLight?'신호등 타일을 모두 선택해주세요.':'잘못된 선택이 포함되어 있습니다.';document.getElementById('cap-tries').textContent=capTries+'번 시도';buildCap();}
+}
+
+/* ═══════════════════════════════════════
+   PASSWORD
+═══════════════════════════════════════ */
+const PW_HISTORY = ['P@ssw0rd!','Hello1234!'];
+const RULES = [
+  {label:'8자 이상',fn:v=>v.length>=8},
+  {label:'대문자 포함',fn:v=>/[A-Z]/.test(v)},
+  {label:'특수문자 포함 (!@#$%)',fn:v=>/[!@#$%^&*]/.test(v)},
+  {label:'숫자 포함',fn:v=>/[0-9]/.test(v)},
+  {label:'공백 없음',fn:v=>!/\s/.test(v)},
+  {label:'최근 사용 비밀번호 아님',fn:v=>!PW_HISTORY.includes(v)},
+];
+let pwSubmitCount = 0;
+function initPw(){pwSubmitCount=0;document.getElementById('pw-input').value='';document.getElementById('pw-err').textContent='';renderRules('');}
+function renderRules(v){
+  const ul=document.getElementById('pw-rules');ul.innerHTML='';
+  RULES.forEach(r=>{const ok=r.fn(v);const li=document.createElement('li');li.style.color=v.length===0?'#aaa':ok?'#0f6e56':'#a32d2d';li.textContent=(v.length===0?'○ ':ok?'✓ ':'✗ ')+r.label;ul.appendChild(li);});
+}
+function checkPw(v){renderRules(v);document.getElementById('pw-err').textContent='';}
+function submitPw(){
+  const v=document.getElementById('pw-input').value,e=document.getElementById('pw-err');
+  if(!RULES.every(r=>r.fn(v))){e.style.color='#a32d2d';e.textContent='모든 조건을 충족해야 합니다.';return;}
+  pwSubmitCount++;
+  if(pwSubmitCount===1){e.style.color='#a32d2d';e.textContent='이전과 동일한 비밀번호입니다.';}
+  else if(pwSubmitCount===2){e.style.color='#a32d2d';e.textContent='너무 쉬운 비밀번호입니다.';}
+  else if(pwSubmitCount===3){e.style.color='#a32d2d';e.textContent='다른 사이트에서 유출된 비밀번호입니다.';}
+  else{e.style.color='#0f6e56';e.textContent='비밀번호가 설정되었습니다! ('+pwSubmitCount+'번 시도)';}
+}
+
+/* ═══════════════════════════════════════
+   AD TRAP
+═══════════════════════════════════════ */
+let adConfirmCount = 0;
+function initAd(){
+  adConfirmCount=0;
+  document.getElementById('ad-overlay').classList.remove('show');
+  document.getElementById('ad-fake-page').classList.remove('show');
+  document.getElementById('ad-status').textContent='';
+  document.getElementById('real-confirm').style.display='';
+  document.getElementById('ad-redirect-row').style.display='none';
+  document.getElementById('ad-redirect-bar').style.width='0%';
+}
+function tryConfirm(){
+  adConfirmCount++;
+  if(adConfirmCount%2===1){document.getElementById('ad-overlay').classList.add('show');}
+  else{document.getElementById('ad-status').textContent='제출 완료! ('+adConfirmCount+'번 시도 끝에 성공)';document.getElementById('real-confirm').style.display='none';}
+}
+function closeAd(){document.getElementById('ad-overlay').classList.remove('show');document.getElementById('ad-status').textContent='광고를 닫았습니다. 다시 눌러보세요.';}
+function goAdPage(){
+  const row=document.getElementById('ad-redirect-row'),bar=document.getElementById('ad-redirect-bar');
+  row.style.display='block';bar.style.width='0%';
+  let pct=0;
+  const t=setInterval(()=>{pct+=5;bar.style.width=pct+'%';if(pct>=100){clearInterval(t);document.getElementById('ad-overlay').classList.remove('show');document.getElementById('ad-fake-page').classList.add('show');}},60);
+}
+function closeAdPage(){document.getElementById('ad-fake-page').classList.remove('show');document.getElementById('ad-status').textContent='광고 페이지에서 돌아왔습니다. 다시 확인 버튼을 눌러보세요.';}
+
+/* ═══════════════════════════════════════
+   UPDATE
+═══════════════════════════════════════ */
+let updateTimer=null,updatePct=1,updateMsgIdx=0;
+const updateMsgs=['설치 파일 확인 중...','시스템 파일 분석 중...','보안 패치 적용 중...','드라이버 업데이트 중...','레지스트리 구성 중...','재시작 준비 중...'];
+function initUpdate(){
+  clearInterval(updateTimer);updatePct=1;updateMsgIdx=0;
+  document.getElementById('update-bar').style.width='1%';
+  document.getElementById('update-pct').textContent='1%';
+  document.getElementById('update-skip').style.display='';
+  document.getElementById('update-msg').textContent=updateMsgs[0];
+  updateTimer=setInterval(()=>{
+    if(updatePct<14){updatePct+=Math.random()*1.2;updateMsgIdx=(updateMsgIdx+1)%updateMsgs.length;}
+    else if(updatePct<15){updatePct+=.02;}
+    else{updatePct=1;document.getElementById('update-msg').textContent='오류 발생. 다시 시작합니다...';setTimeout(()=>{document.getElementById('update-msg').textContent=updateMsgs[0];},2000);}
+    const d=Math.min(Math.floor(updatePct),14);
+    document.getElementById('update-bar').style.width=d+'%';
+    document.getElementById('update-pct').textContent=d+'%';
+    document.getElementById('update-msg').textContent=updateMsgs[updateMsgIdx];
+  },600);
+}
+function skipUpdate(){document.getElementById('update-msg').textContent='이 업데이트는 건너뛸 수 없습니다.';document.getElementById('update-skip').style.display='none';}
+
+/* ═══════════════════════════════════════
+   WIFI
+═══════════════════════════════════════ */
+let wifiTimer=null,wifiCycle=0;
+const wifiLogs=[];
+function addLog(m){wifiLogs.push('['+new Date().toLocaleTimeString()+'] '+m);if(wifiLogs.length>8)wifiLogs.shift();document.getElementById('wifi-log').textContent=wifiLogs.join('\n');}
+function setWifi(s){
+  const dot=document.getElementById('wifi-dot'),txt=document.getElementById('wifi-status-text'),ti=document.getElementById('wifi-title'),ic=document.getElementById('wifi-icon');
+  if(s==='off'){dot.style.background='#E24B4A';txt.textContent='연결 없음';ti.textContent='인터넷이 연결되지 않았습니다';ic.textContent='📶';}
+  else if(s==='ing'){dot.style.background='#EF9F27';txt.textContent='연결 중...';ti.textContent='인터넷 연결 시도 중';ic.textContent='📡';}
+  else{dot.style.background='#1D9E75';txt.textContent='연결됨';ti.textContent='연결되었습니다!';ic.textContent='✅';}
+}
+function initWifi(){
+  clearInterval(wifiTimer);wifiCycle=0;wifiLogs.length=0;setWifi('off');
+  addLog('네트워크 상태 확인 중...');addLog('Wi-Fi 감지됨: KT_GiGA_5G (-42dBm)');
+  addLog('IP 할당 완료: 192.168.0.14');addLog('DNS 서버 응답 없음');addLog('인터넷 연결 실패');
+}
+function wifiRetry(){
+  clearInterval(wifiTimer);wifiCycle++;setWifi('ing');addLog('재연결 시도 중... ('+wifiCycle+'번째)');
+  setTimeout(()=>{
+    if(wifiCycle%5===0){setWifi('on');addLog('연결 성공!');setTimeout(()=>{setWifi('off');addLog('연결이 갑자기 끊어졌습니다.');},2500);}
+    else{setWifi('off');const ms=['DNS 조회 실패','게이트웨이 응답 없음','패킷 손실 100%','타임아웃','라우터 오류 (0xE7F)'];addLog('실패: '+ms[wifiCycle%ms.length]);}
+  },1800);
+}
+
+/* ═══════════════════════════════════════
+   TINY
+═══════════════════════════════════════ */
+let tinyCount=0;
+function updateTiny(){
+  document.getElementById('tiny-counter').textContent=tinyCount+' / 10';
+  document.getElementById('tiny-msg').textContent=tinyCount>=10?'🎉 10번 성공! 대단한 집중력이에요.':tinyCount>0?tinyCount+'번 성공. '+(10-tinyCount)+'번 남았어요.':'';
+}
+function placeTinyBtn(){
+  const a=document.getElementById('tiny-area'),b=document.getElementById('tiny-btn');
+  const aw=a.offsetWidth||300,ah=a.offsetHeight||140;
+  b.style.left=Math.floor(Math.random()*(aw-44))+'px';
+  b.style.top=Math.floor(Math.random()*(ah-22))+'px';
+}
+function tinyClick(){tinyCount++;updateTiny();if(tinyCount<10)placeTinyBtn();}
+
+/* ═══════════════════════════════════════
+   POPUP
+═══════════════════════════════════════ */
+function openPopup(){document.getElementById('popup-overlay').classList.add('show');document.getElementById('open-popup-btn').style.display='none';document.getElementById('popup-msg').textContent='';}
+function closePopup(){document.getElementById('popup-overlay').classList.remove('show');document.getElementById('open-popup-btn').style.display='';document.getElementById('popup-msg').textContent='창을 닫았습니다.';}
+function minimizePopup(){document.getElementById('popup-overlay').classList.remove('show');document.getElementById('open-popup-btn').style.display='';document.getElementById('popup-msg').textContent='⚠️ 최소화했더니 창이 꺼져버렸습니다.';}
+
+/* ═══════════════════════════════════════
+   SPINNER
+═══════════════════════════════════════ */
+let spinMsgTimer=null,spinIdx=0;
+const spinTexts=['데이터를 불러오는 중...','서버에 연결 중...','거의 다 됐습니다...','왜 이렇게 오래 걸리지...','곧 됩니다 (아마도)...'];
+function startSpinner(){
+  clearInterval(spinMsgTimer);spinIdx=0;
+  document.getElementById('spin-msgs').textContent=spinTexts[0];
+  spinMsgTimer=setInterval(()=>{spinIdx=(spinIdx+1)%spinTexts.length;document.getElementById('spin-msgs').textContent=spinTexts[spinIdx];},2200);
+}
+function spinCancel(){clearInterval(spinMsgTimer);document.getElementById('spin-msgs').textContent='취소 중...';setTimeout(()=>{document.getElementById('spin-msgs').textContent='취소에 실패했습니다. 로딩을 계속합니다.';startSpinner();},1800);}
+
+/* ═══════════════════════════════════════
+   MESSAGE
+═══════════════════════════════════════ */
+function setupMsg(){
+  const inp=document.getElementById('msg-input');
+  inp.value='';document.getElementById('msg-hint').textContent='';
+  document.getElementById('msg-log').innerHTML='<div class="msg-empty">메세지를 입력해보세요.</div>';
+  inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();document.getElementById('msg-hint').textContent='⚠️ 엔터를 눌렀더니 전송됐습니다! (Shift+Enter도 안 돼요)';sendMsg();}};
+}
+function sendMsg(){
+  const inp=document.getElementById('msg-input'),text=inp.value.trim();
+  if(!text) return;
+  const log=document.getElementById('msg-log');
+  const em=log.querySelector('.msg-empty');if(em)em.remove();
+  const b=document.createElement('div');b.className='msg-bubble';b.textContent=text;
+  log.appendChild(b);log.scrollTop=log.scrollHeight;inp.value='';
+}
+
+/* ═══════════════════════════════════════
+   SLOW QUIZ
+═══════════════════════════════════════ */
+let slowTimerInterval=null,slowQIdx=0,slowTimeLeft=5,slowAnswered=false;
+const slowQs=[
+  {q:'대한민국의 수도는?',opts:['서울','부산','인천','대구'],ans:0},
+  {q:'1 + 1 = ?',opts:['1','2','3','4'],ans:1},
+  {q:'태양계에서 가장 큰 행성은?',opts:['토성','지구','목성','화성'],ans:2},
+  {q:'물의 화학식은?',opts:['CO₂','NaCl','H₂O','O₂'],ans:2},
+  {q:'"사과"의 영어는?',opts:['Banana','Orange','Apple','Grape'],ans:2},
+];
+function initSlow(){slowQIdx=0;loadSlowQ();}
+function loadSlowQ(){
+  clearInterval(slowTimerInterval);slowAnswered=false;slowTimeLeft=5;
+  const q=slowQs[slowQIdx%slowQs.length];
+  document.getElementById('slow-task').textContent=q.q;
+  document.getElementById('slow-result').textContent='';
+  document.getElementById('slow-next').style.display='none';
+  const opts=document.getElementById('slow-opts');opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='slow-opt';btn.textContent=o;
+    btn.onclick=()=>slowAnswer(i,q.ans,btn);
+    opts.appendChild(btn);
+  });
+  const bar=document.getElementById('slow-timer-bar');
+  bar.style.transition='none';bar.style.width='100%';
+  document.getElementById('slow-countdown').textContent='⏱ 5.0초';
+  setTimeout(()=>{
+    bar.style.transition='width .1s linear';
+    slowTimerInterval=setInterval(()=>{
+      if(slowAnswered){clearInterval(slowTimerInterval);return;}
+      slowTimeLeft-=0.1;
+      bar.style.width=Math.max(slowTimeLeft/5*100,0)+'%';
+      document.getElementById('slow-countdown').textContent='⏱ '+Math.max(slowTimeLeft,0).toFixed(1)+'초';
+      if(slowTimeLeft<=0){clearInterval(slowTimerInterval);timeoutSlow();}
+    },100);
+  },50);
+}
+function slowAnswer(chosen,correct,btn){
+  if(slowAnswered) return;
+  btn.disabled=true;btn.textContent='처리 중...';
+  setTimeout(()=>{
+    if(slowAnswered) return;
+    slowAnswered=true;clearInterval(slowTimerInterval);
+    document.getElementById('slow-countdown').textContent='';
+    const r=document.getElementById('slow-result');
+    r.style.color=chosen===correct?'#0f6e56':'#a32d2d';
+    r.textContent=chosen===correct?'✓ 정답! (하지만 느렸죠?)':'✗ 오답입니다.';
+    document.getElementById('slow-next').style.display='inline-block';
+  },1000+Math.random()*1200);
+}
+function timeoutSlow(){
+  if(slowAnswered) return;slowAnswered=true;
+  document.querySelectorAll('.slow-opt').forEach(b=>b.disabled=true);
+  const r=document.getElementById('slow-result');
+  r.style.color='#a32d2d';r.textContent='⏰ 시간 초과! 버튼이 너무 느렸나요?';
+  document.getElementById('slow-next').style.display='inline-block';
+  document.getElementById('slow-countdown').textContent='⏱ 0.0초';
+}
+function nextSlowQ(){slowQIdx++;loadSlowQ();}
+
+/* ═══════════════════════════════════════
+   LOADING BAR
+═══════════════════════════════════════ */
+let loadingTimer=null;
+const lMsgs=['서버에 연결 중...','파일 검증 중...','데이터 전송 중...','거의 다 왔습니다!','...'];
+function startLoading(){
+  clearInterval(loadingTimer);let pct=0;
+  document.getElementById('prog-bar').style.width='0%';
+  document.getElementById('prog-pct').textContent='0%';
+  document.getElementById('prog-msg').textContent='업로드 준비 중...';
+  document.getElementById('retry-btn').style.display='none';
+  loadingTimer=setInterval(()=>{
+    if(pct<99){
+      pct=Math.min(pct+(pct<80?Math.random()*6+1:Math.random()*.3),99);
+      document.getElementById('prog-bar').style.width=pct.toFixed(1)+'%';
+      document.getElementById('prog-pct').textContent=Math.floor(pct)+'%';
+      document.getElementById('prog-msg').textContent=lMsgs[Math.min(Math.floor(pct/20),lMsgs.length-1)];
+    } else {
+      clearInterval(loadingTimer);
+      document.getElementById('prog-msg').textContent='⚠️ 업로드 실패: 알 수 없는 오류가 발생했습니다.';
+      document.getElementById('retry-btn').style.display='inline-block';
+    }
+  },80);
+}
+
+/* ═══════════════════════════════════════
+   VOLUME
+═══════════════════════════════════════ */
+let volEscaping=false;
+function escapeSlider(){
+  if(volEscaping) return;volEscaping=true;
+  const s=document.getElementById('vol-slider'),c=parseInt(s.value);
+  s.value=c>50?Math.floor(Math.random()*30):Math.floor(Math.random()*30)+65;
+  updateVol(s.value);setTimeout(()=>{volEscaping=false;},800);
+}
+function updateVol(v){
+  document.getElementById('vol-display').textContent=v;
+  const d=Math.abs(parseInt(v)-50);
+  document.getElementById('vol-label').textContent=d===0?'🎉 성공! (정말로요?!)':d<5?'거의 다 왔어요...':'목표: 50 / 슬라이더를 잡아보세요';
+}
+
+/* ═══════════════════════════════════════
+   TYPO
+═══════════════════════════════════════ */
+const typoMap={'ㅏ':'ㅓ','ㅓ':'ㅏ','ㅗ':'ㅜ','ㅜ':'ㅗ','ㅣ':'ㅡ','ㅡ':'ㅣ','a':'s','s':'a','e':'r','r':'e','i':'o','o':'i','n':'m','m':'n'};
+function applyTypo(text){
+  const r=[...text].map(c=>{if(Math.random()<.28&&typoMap[c])return typoMap[c];if(Math.random()<.07)return c+c;if(Math.random()<.05&&c!==' ')return '';return c;});
+  document.getElementById('typo-display').textContent=r.join('')||'입력하면 여기에 표시됩니다.';
+}
+
+/* ═══════════════════════════════════════
+   CAPTCHA SIMPLE
+═══════════════════════════════════════ */
+const CAP2_CHARS='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+let cap2Answer='',cap2Tries=0;
+function initCap2(){cap2Tries=0;genCap2();}
+function genCap2(){
+  let c='';for(let i=0;i<6;i++)c+=CAP2_CHARS[Math.floor(Math.random()*CAP2_CHARS.length)];
+  cap2Answer=c;
+  document.getElementById('cap2-img').textContent=c.split('').join(' ');
+  document.getElementById('cap2-input').value='';
+  document.getElementById('cap2-result').textContent='';
+  document.getElementById('cap2-tries').textContent=cap2Tries>0?cap2Tries+'번 시도함':'';
+}
+function checkCap2(){
+  cap2Tries++;
+  document.getElementById('cap2-tries').textContent=cap2Tries+'번 시도함';
+  const r=document.getElementById('cap2-result');
+  r.style.color='#a32d2d';
+  r.textContent='✗ 보안문자가 일치하지 않습니다. 다시 시도하세요.';
+  genCap2();
+}
+</script>
+</body>
+</html>
