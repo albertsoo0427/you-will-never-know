@@ -19,8 +19,8 @@ body{font-family:sans-serif;background:#f7f6f3;color:#1a1a1a;}
 /* ── INNER PAGE COMMON ── */
 .back{font-size:13px;color:#888;cursor:pointer;border:none;background:none;margin-bottom:1.5rem;padding:0;display:inline-flex;align-items:center;gap:4px;}
 .back:hover{color:#1a1a1a;}
-.ptitle{font-size:20px;font-weight:700;margin-bottom:.4rem;}
-.pdesc{font-size:13px;color:#666;margin-bottom:1.5rem;line-height:1.6;}
+.ptitle{display:none;}
+.pdesc{font-size:22px;font-weight:600;color:#1a1a1a;margin-bottom:1.5rem;line-height:1.5;}
 
 input[type="text"],textarea{
   font-family:inherit;font-size:14px;color:#1a1a1a;
@@ -204,7 +204,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="session" class="page">
   <button class="back" onclick="goHome()">← 홈으로</button>
   <h2 class="ptitle">텍스트 박스의 소멸</h2>
-  <p class="pdesc">아래 문장을 받아 적고 '전송'을 눌러보세요.</p>
+  <p class="pdesc">아래 문장을 받아 적은 뒤 전송 버튼을 눌러주세요.</p>
   <div class="sess-quote">"인공지능이 발전함에 따라, 인간과 기계의 협업 방식은 점점 더 정교해지고 있으며, 이는 사회 전반에 걸친 패러다임의 전환을 예고하고 있습니다."</div>
   <div id="sess-wrap">
     <textarea id="sess-textarea" placeholder="위 문장을 여기에 받아 적어보세요..." oninput="sessType()"></textarea>
@@ -228,7 +228,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="keyboard" class="page">
   <button class="back" onclick="goHome()">← 홈으로</button>
   <h2 class="ptitle">하드웨어 지옥</h2>
-  <p class="pdesc">키보드로 아무 키나 눌러보세요.</p>
+  <p class="pdesc">텍스트를 입력해주세요.</p>
   <div class="kb-box">
     <div class="kb-label">입력된 텍스트</div>
     <div id="kb-typed"><span style="color:#aaa;font-size:14px;font-weight:400;">입력을 시작해보세요...</span></div>
@@ -251,7 +251,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="capgrid" class="page">
   <button class="back" onclick="goHome()">← 홈으로</button>
   <h2 class="ptitle">끝나지 않는 캡차</h2>
-  <p class="pdesc">신호등이 있는 칸을 모두 선택하세요.</p>
+  <p class="pdesc">신호등이 포함된 이미지를 모두 선택하세요.</p>
   <div id="cap-grid"></div>
   <div id="cap-err"></div>
   <button onclick="verifyCap()">확인</button>
@@ -275,7 +275,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="adtrap" class="page">
   <button class="back" onclick="goHome()">← 홈으로</button>
   <h2 class="ptitle">낚시 광고</h2>
-  <p class="pdesc">아래 확인 버튼을 눌러보세요.</p>
+  <p class="pdesc">아래 버튼을 눌러 제출을 완료하세요.</p>
   <div id="ad-scene">
     <p>"정말 제출하시겠습니까?"</p>
     <button id="real-confirm" onclick="tryConfirm()">확인</button>
@@ -320,7 +320,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="update" class="page">
   <button class="back" onclick="goHome();clearInterval(updateTimer);">← 홈으로</button>
   <h2 class="ptitle">자동 업데이트의 습격</h2>
-  <p class="pdesc">오늘 중요한 발표가 있는 날. 컴퓨터를 켰습니다.</p>
+  <p class="pdesc">잠시만 기다려주세요.</p>
   <div class="update-box">
     <div style="font-size:40px;">💻</div>
     <div style="font-size:16px;font-weight:700;">업데이트 설치 중</div>
@@ -336,7 +336,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="wifi" class="page">
   <button class="back" onclick="goHome();clearInterval(wifiTimer);">← 홈으로</button>
   <h2 class="ptitle">연결되어있는데요?</h2>
-  <p class="pdesc">와이파이는 분명히 연결되어 있습니다. 그런데...</p>
+  <p class="pdesc">네트워크 연결을 확인하세요.</p>
   <div class="wifi-box">
     <div id="wifi-icon">📶</div>
     <div id="wifi-title">인터넷이 연결되지 않았습니다</div>
@@ -351,7 +351,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="tiny" class="page">
   <button class="back" onclick="goHome()">← 홈으로</button>
   <h2 class="ptitle">극소 확인 버튼</h2>
-  <p class="pdesc">버튼을 10번 눌러보세요. 누를 수 있다면요.</p>
+  <p class="pdesc">확인 버튼을 10번 눌러주세요.</p>
   <div id="tiny-counter">0 / 10</div>
   <div id="tiny-area"><button id="tiny-btn" onclick="tinyClick()">확인</button></div>
   <div id="tiny-msg"></div>
@@ -361,7 +361,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="popup" class="page">
   <button class="back" onclick="goHome()">← 홈으로</button>
   <h2 class="ptitle">자폭하는 팝업창</h2>
-  <p class="pdesc">팝업을 열고 노란색(최소화) 버튼을 눌러보세요.</p>
+  <p class="pdesc">알림창을 확인하세요.</p>
   <div id="popup-scene">
     <button id="open-popup-btn" onclick="openPopup()">팝업 열기</button>
     <div id="popup-overlay">
@@ -398,7 +398,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="message" class="page">
   <button class="back" onclick="goHome()">← 홈으로</button>
   <h2 class="ptitle">엔터 = 전송</h2>
-  <p class="pdesc">아래 문의 내용을 줄바꿈으로 구분해 입력해보세요.</p>
+  <p class="pdesc">아래 문의 내용을 항목별로 구분해 입력하고 전송하세요.</p>
   <div class="msg-prompt">
     고객센터 문의:<br><br>
     <strong>이름:</strong> 홍길동<br>
@@ -418,7 +418,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="slow" class="page">
   <button class="back" onclick="goHome();clearInterval(slowTimerInterval);">← 홈으로</button>
   <h2 class="ptitle">느린 버튼</h2>
-  <p class="pdesc">5초 안에 정답을 눌러야 합니다. 버튼은 1~2초 느리게 반응해요.</p>
+  <p class="pdesc">문제를 읽고 정답을 선택하세요.</p>
   <div id="slow-timer-wrap"><div id="slow-timer-bar"></div></div>
   <div id="slow-countdown">⏱ 5.0초</div>
   <div id="slow-task"></div>
@@ -431,7 +431,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="loading" class="page">
   <button class="back" onclick="goHome();clearInterval(loadingTimer);">← 홈으로</button>
   <h2 class="ptitle">영원한 로딩바</h2>
-  <p class="pdesc">파일을 업로드하고 있습니다. 거의 다 왔어요!</p>
+  <p class="pdesc">파일을 업로드하고 있습니다.</p>
   <div id="prog-bar-wrap"><div id="prog-bar"></div></div>
   <div id="prog-pct">0%</div>
   <div id="prog-msg"></div>
@@ -442,7 +442,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="volume" class="page">
   <button class="back" onclick="goHome()">← 홈으로</button>
   <h2 class="ptitle">탈출하는 볼륨 슬라이더</h2>
-  <p class="pdesc">마우스를 올리면 슬라이더가 도망칩니다. 정확히 50으로 맞춰보세요.</p>
+  <p class="pdesc">볼륨을 50으로 맞춰주세요.</p>
   <input type="range" id="vol-slider" min="0" max="100" value="30" step="1"
     onmouseover="escapeSlider()" oninput="updateVol(this.value)">
   <div id="vol-display">30</div>
@@ -453,7 +453,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="typo" class="page">
   <button class="back" onclick="goHome()">← 홈으로</button>
   <h2 class="ptitle">자동 오타 생성기</h2>
-  <p class="pdesc">입력한 내용이 아래에 변형되어 나타납니다.</p>
+  <p class="pdesc">내용을 입력하세요.</p>
   <textarea id="typo-input" placeholder="여기에 입력해보세요..." oninput="applyTypo(this.value)"></textarea>
   <div id="typo-display">입력하면 여기에 표시됩니다.</div>
 </div>
@@ -462,7 +462,7 @@ input[type="range"]{width:100%;accent-color:#378ADD;}
 <div id="captcha" class="page">
   <button class="back" onclick="goHome()">← 홈으로</button>
   <h2 class="ptitle">지옥의 보안문자</h2>
-  <p class="pdesc">보안문자를 정확히 입력하고 확인을 눌러보세요.</p>
+  <p class="pdesc">보안문자를 입력하고 확인을 눌러주세요.</p>
   <div id="cap2-img"></div><br>
   <input type="text" id="cap2-input" placeholder="보안문자 입력...">
   <div class="cap2-btns" style="margin-top:.75rem;">
