@@ -506,6 +506,17 @@ const BTN_STYLES = [
 
 const PAGE_IDS = ['session','keyboard','capgrid','password','adtrap','update','wifi','tiny','popup','spinner','message','slow','loading','volume','typo','captcha'];
 
+const FAKE_BTN_STYLES = [
+  {w:88,h:88,r:'50%',bg:'#1a1a1a'},
+  {w:140,h:32,r:'999px',bg:'#3a3a3a'},
+  {w:40,h:40,r:'4px',bg:'#fff',extra:'border:2px solid #222;'},
+  {w:24,h:80,r:'2px',bg:'#888'},
+  {w:160,h:160,r:'0',bg:'#e8e8e8'},
+  {w:55,h:22,r:'0',bg:'transparent',extra:'border-bottom:3px solid #111;'},
+  {w:100,h:100,r:'50%',bg:'#ddd'},
+  {w:180,h:10,r:'0',bg:'#bbb'},
+];
+
 function buildHome() {
   const wrap = document.getElementById('chaos-wrap');
   wrap.innerHTML = '';
@@ -527,6 +538,7 @@ function buildHome() {
     return null;
   }
 
+  // 진짜 버튼 16개
   BTN_STYLES.forEach((cfg, i) => {
     const pos = tryPlace(cfg.w, cfg.h);
     if (!pos) return;
@@ -547,6 +559,30 @@ function buildHome() {
     btn.addEventListener('mouseenter', () => btn.style.opacity = '0.75');
     btn.addEventListener('mouseleave', () => btn.style.opacity = '1');
     btn.addEventListener('click', () => goPage(PAGE_IDS[i]));
+    wrap.appendChild(btn);
+  });
+
+  // 가짜 버튼 8개 — 눌러도 아무 일도 안 일어남
+  FAKE_BTN_STYLES.forEach((cfg) => {
+    const pos = tryPlace(cfg.w, cfg.h);
+    if (!pos) return;
+    placed.push(pos);
+    const rot = (Math.random() - 0.5) * 14;
+    const btn = document.createElement('div');
+    btn.style.cssText = `
+      position:absolute;
+      left:${pos.x}px;top:${pos.y}px;
+      width:${cfg.w}px;height:${cfg.h}px;
+      background:${cfg.bg};
+      border-radius:${cfg.r};
+      ${cfg.extra || ''}
+      cursor:pointer;
+      transform:rotate(${rot}deg);
+      transition:opacity .15s;
+    `;
+    btn.addEventListener('mouseenter', () => btn.style.opacity = '0.75');
+    btn.addEventListener('mouseleave', () => btn.style.opacity = '1');
+    // 클릭해도 아무것도 안 함
     wrap.appendChild(btn);
   });
 
